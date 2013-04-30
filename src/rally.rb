@@ -66,6 +66,7 @@ class Rally
       rev['Description']
     end
 
+    puts "Revisions :"
     @rally_api.read(:revision_history, artifact['RevisionHistory']['ObjectID'])['Revisions'].each do |rev|
       puts "#{createdOn(rev)} - #{description(rev)}" if description(rev).include?('SCHEDULE STATE changed from')
     end

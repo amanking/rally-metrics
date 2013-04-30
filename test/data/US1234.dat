@@ -1,0 +1,9 @@
+FormattedID : US1234
+Name : As user, I should be able to see "My Contacts" Dropdown
+PlanEstimate : 5.0
+Revisions :
+2013-04-18T05:56:02.658Z - ACCEPTED DATE added [Wed Apr 17 23:56:02 MDT 2013], SCHEDULE STATE changed from [Completed] to [Accepted]
+2013-04-18T05:10:10.082Z - ACCEPTED DATE removed [Wed Apr 17 23:04:45 MDT 2013], SCHEDULE STATE changed from [Accepted] to [Completed]
+2013-04-18T05:04:45.244Z - ACCEPTED DATE added [Wed Apr 17 23:04:45 MDT 2013], SCHEDULE STATE changed from [Completed] to [Accepted]
+2013-04-16T04:36:22.762Z - SCHEDULE STATE changed from [In-Progress] to [Completed]
+2013-04-04T04:31:56.695Z - SCHEDULE STATE changed from [Defined] to [In-Progress], IN PROGRESS DATE added [Wed Apr 03 22:31:56 MDT 2013]
