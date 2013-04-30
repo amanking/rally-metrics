@@ -41,7 +41,7 @@ class Rally
     end
 
     defects.each do |defect|
-      print_attributes(defect, %w{ObjectID FormattedID Name TaskActualTotal})
+      print_attributes(defect, %w{FormattedID Name TaskActualTotal})
       print_revisions(defect)
       puts "------------------------"
     end
