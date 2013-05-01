@@ -1,5 +1,5 @@
 require 'rally_api'
-require 'story'
+require 'unit_of_work'
 require 'revs_parser'
 
 module Rally
@@ -30,7 +30,7 @@ module Rally
       end
 
       stories.map do |s|
-        Story.new(s['FormattedID'], s['Name'], s['PlanEstimate'], @revs_parser.parse(get_revisions(s)))
+        UnitOfWork.new(s['FormattedID'], s['Name'], s['PlanEstimate'], @revs_parser.parse(get_revisions(s)))
       end
     end
 
@@ -38,31 +38,18 @@ module Rally
       defects = @rally_api.find do |q|
         q.type = :defect
         q.query_string = "((Project.Name = \"#{project}\") and (Iteration.Name = \"#{iteration}\"))"
-        q.fetch = "ObjectID,FormattedID,Name,RevisionHistory,TaskActualTotal"
+        q.fetch = "ObjectID,FormattedID,Name,CreationDate,RevisionHistory,TaskActualTotal"
+        q.order = "CreationDate asc"
         q.project_scope_up = false
         q.project_scope_down = true
       end
 
-      defects.each do |defect|
-        print_attributes(defect, %w{FormattedID Name TaskActualTotal})
-        print_revisions(defect)
-        puts "------------------------"
+      defects.map do |d|
+        UnitOfWork.new(d['FormattedID'], d['Name'], d['TaskActualTotal'], @revs_parser.parse(get_revisions(d)))
       end
-
-      defects
     end
 
     private
-
-    def print_attributes(artifact, attributes)
-      attributes.each do |attr|
-        puts "#{attr} : #{artifact[attr]}"
-      end
-    end
-
-    def print_revisions(artifact)
-      puts "Revisions : \n#{get_revisions(artifact).join("\n")}"
-    end
 
     def get_revisions(artifact)
       revision_history = @rally_api.read(:revision_history, artifact['RevisionHistory']['ObjectID'])

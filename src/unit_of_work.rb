@@ -1,6 +1,6 @@
 require 'date'
 
-class Story
+class UnitOfWork
   attr_reader :id, :name, :estimate
 
   def initialize(id, name, estimate, timeline = [])

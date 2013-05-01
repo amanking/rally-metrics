@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), "../spec_helper")
 require 'rally_client'
 
-def display_stories(stories)
+def display_tasks(stories)
   stories.each { |st| puts st }
 end
 
@@ -27,6 +27,14 @@ describe "Rally", :broken => true do
   end
 
   it "should fetch defect data for given sprint" do
-    @rally.defects("Sprint 15-4").should have(5).items
+    defects = @rally.defects("Sprint 15-4")
+
+    defects.should have(5).items
+
+    last = defects.last
+    last.id.should == 'DE23703'
+    last.estimate.should approx_equal(0.0)
+    last.dev_days.should approx_equal(0.0)
+    last.qa_days.should approx_equal(0.1)
   end
 end
