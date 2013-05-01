@@ -6,6 +6,12 @@ module Rally
   REV_TEXT_REGEX = /SCHEDULE STATE changed from \[(?<from>.+?)\] to \[(?<to>.+?)\]/
 
   class RallyClient
+    @@base_query = {
+        :order => "CreationDate asc",
+        :project_scope_up => false,
+        :project_scope_down => true
+    }
+
     def initialize(user, pass, workspace, project, opts = {})
       @config = {
           :username => user,
@@ -20,31 +26,25 @@ module Rally
     end
 
     def stories(iteration)
-      stories = @rally_api.find do |q|
-        q.type = :story
-        q.query_string = "((Project.Name = \"#{project}\") and ((Iteration.Name = \"#{iteration}\") and (DirectChildrenCount = \"0\")))"
-        q.fetch = "ObjectID,FormattedID,CreationDate,Name,RevisionHistory,PlanEstimate"
-        q.order = "CreationDate asc"
-        q.project_scope_up = false
-        q.project_scope_down = true
-      end
+      query = RallyAPI::RallyQuery.new(@@base_query.merge({
+          :type => :story,
+          :query_string => "((Project.Name = \"#{project}\") and ((Iteration.Name = \"#{iteration}\") and (DirectChildrenCount = \"0\")))",
+          :fetch => "ObjectID,FormattedID,CreationDate,Name,RevisionHistory,PlanEstimate"
+      }))
 
-      stories.map do |s|
+      @rally_api.find(query).map do |s|
         UnitOfWork.new(s['FormattedID'], s['Name'], s['PlanEstimate'], @revs_parser.parse(get_revisions(s)))
       end
     end
 
     def defects(iteration)
-      defects = @rally_api.find do |q|
-        q.type = :defect
-        q.query_string = "((Project.Name = \"#{project}\") and (Iteration.Name = \"#{iteration}\"))"
-        q.fetch = "ObjectID,FormattedID,Name,CreationDate,RevisionHistory,TaskActualTotal"
-        q.order = "CreationDate asc"
-        q.project_scope_up = false
-        q.project_scope_down = true
-      end
+      query = RallyAPI::RallyQuery.new(@@base_query.merge({
+          :type => :defect,
+          :query_string => "((Project.Name = \"#{project}\") and (Iteration.Name = \"#{iteration}\"))",
+          :fetch => "ObjectID,FormattedID,Name,CreationDate,RevisionHistory,TaskActualTotal"
+      }))
 
-      defects.map do |d|
+      @rally_api.find(query).map do |d|
         UnitOfWork.new(d['FormattedID'], d['Name'], d['TaskActualTotal'], @revs_parser.parse(get_revisions(d)))
       end
     end
