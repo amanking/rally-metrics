@@ -25,6 +25,16 @@ module Rally
       @revs_parser = RevsParser.new
     end
 
+    def iteration(date)
+      query = RallyAPI::RallyQuery.new(@@base_query.merge({
+          :type => :iteration,
+          :query_string => "((Project.Name = \"#{project}\") and ((StartDate <= \"#{date.strftime('%F')}\") and (EndDate >= \"#{date.strftime('%F')}\")))",
+          :fetch => "ObjectID,FormattedID,Name,StartDate,EndDate"
+      }))
+
+      @rally_api.find(query).first['Name']
+    end
+
     def stories(iteration)
       query = RallyAPI::RallyQuery.new(@@base_query.merge({
           :type => :story,
